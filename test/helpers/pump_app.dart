@@ -6,12 +6,20 @@
 // https://opensource.org/licenses/MIT.
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:wordle/l10n/l10n.dart';
+import 'package:words_repository/words_repository.dart';
+
+class MockWordsRepository extends Mock implements WordsRepository {
+  @override
+  String getNextWord() => '';
+}
 
 extension PumpApp on WidgetTester {
-  Future<void> pumpApp(Widget widget) {
+  Future<void> pumpApp(Widget widget, {WordsRepository? wordsRepository}) {
     return pumpWidget(
       MaterialApp(
         localizationsDelegates: const [
@@ -19,7 +27,13 @@ extension PumpApp on WidgetTester {
           GlobalMaterialLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        home: widget,
+        home: MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider.value(
+                value: wordsRepository ?? MockWordsRepository())
+          ],
+          child: widget,
+        ),
       ),
     );
   }

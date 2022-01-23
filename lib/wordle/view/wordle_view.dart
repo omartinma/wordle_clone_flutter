@@ -9,8 +9,7 @@ class WordleView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<WordleBloc, WordleState>(
       listenWhen: (previous, current) =>
-          previous.gameStatus != current.gameStatus &&
-          current.gameStatus != GameStatus.playing,
+          previous.gameStatus != current.gameStatus,
       listener: (context, state) {
         if (state.gameStatus == GameStatus.finishedFail) {
           ScaffoldMessenger.of(context).showSnackBar(
