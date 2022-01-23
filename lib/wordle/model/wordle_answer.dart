@@ -14,16 +14,6 @@ class WordleAnswer extends Equatable {
     return results.every((element) => element == GuessResult.correct);
   }
 
-  WordleAnswer copyWith({
-    String? word,
-    List<GuessResult>? results,
-  }) {
-    return WordleAnswer(
-      word: word ?? this.word,
-      results: results ?? this.results,
-    );
-  }
-
   @override
   List<Object?> get props => [word, results];
 }
@@ -44,7 +34,6 @@ extension GuessResultExtension on GuessResult {
         return Colors.green;
       case GuessResult.correctButWrongOrder:
         return Colors.yellow;
-
       case GuessResult.unknown:
         return Colors.transparent;
     }
