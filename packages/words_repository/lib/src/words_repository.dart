@@ -1,14 +1,13 @@
 import 'dart:math';
 
-import 'package:english_words/english_words.dart';
-
 /// {@template words_repository}
 /// A Very Good Project created by Very Good CLI.
 /// {@endtemplate}
 class WordsRepository {
   /// {@macro words_repository}
-  const WordsRepository();
+  const WordsRepository(this._words);
   static const int _maxSize = 5;
+  final List<String> _words;
 
   /// Get next random word
   String getNextWord() {
@@ -16,7 +15,7 @@ class WordsRepository {
     final _random = Random();
     String? nextWord;
     while (nextWord == null) {
-      final element = all[_random.nextInt(all.length)];
+      final element = _words[_random.nextInt(_words.length)];
       if (element.length == _maxSize) {
         nextWord = element;
       }
@@ -26,6 +25,6 @@ class WordsRepository {
 
   /// Return whether a word exists or not
   bool wordExists(String word) {
-    return all.contains(word);
+    return _words.contains(word);
   }
 }
