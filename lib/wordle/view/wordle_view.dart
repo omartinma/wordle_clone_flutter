@@ -13,14 +13,12 @@ class WordleView extends StatelessWidget {
           current.gameStatus != GameStatus.playing,
       listener: (context, state) {
         if (state.gameStatus == GameStatus.finishedFail) {
-          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('You failed! The answer was: ${state.wordToGuess}'),
             ),
           );
         } else if (state.gameStatus == GameStatus.finishedWon) {
-          ScaffoldMessenger.of(context).clearSnackBars();
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('You WON!')),
           );

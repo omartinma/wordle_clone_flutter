@@ -26,6 +26,10 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     WordleGameStarted event,
     Emitter<WordleState> emit,
   ) {
+    if (state.wordToGuess.isNotEmpty) {
+      // You refreshed the game
+      emit(state.copyWith(gameStatus: GameStatus.finishedFail));
+    }
     final word = _wordsRepository.getNextWord();
     emit(
       WordleState(
@@ -45,7 +49,12 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     WordleCurrentAnswerUpdated event,
     Emitter<WordleState> emit,
   ) {
-    emit(state.copyWith(currentAnswer: event.currentAnswer));
+    emit(
+      state.copyWith(
+        currentAnswer: event.currentAnswer,
+        gameStatus: GameStatus.playing,
+      ),
+    );
   }
 
   FutureOr<void> _answerSubmitted(

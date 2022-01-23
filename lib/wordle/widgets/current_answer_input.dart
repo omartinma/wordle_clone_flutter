@@ -23,8 +23,12 @@ class _CurrentAnswerInputState extends State<CurrentAnswerInput> {
   Widget build(BuildContext context) {
     return BlocListener<WordleBloc, WordleState>(
       listenWhen: (previous, current) =>
-          previous.submissionStatus != current.submissionStatus,
+          previous.submissionStatus != current.submissionStatus ||
+          previous.gameStatus != current.gameStatus,
       listener: (context, state) {
+        if (state.gameStatus == GameStatus.started) {
+          textEditingController.clear();
+        }
         if (state.submissionStatus == SubmissionStatus.valid) {
           textEditingController.clear();
           context.read<WordleBloc>().add(const WordleValidAnswerSubmitted());
@@ -49,7 +53,8 @@ class _CurrentAnswerInputState extends State<CurrentAnswerInput> {
           builder: (context, gameStatus) {
             return TextField(
               autofocus: true,
-              enabled: gameStatus == GameStatus.playing,
+              enabled: gameStatus == GameStatus.playing ||
+                  gameStatus == GameStatus.started,
               inputFormatters: [
                 LengthLimitingTextInputFormatter(maxWordLength),
               ],

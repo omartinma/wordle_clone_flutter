@@ -8,7 +8,7 @@ class WordleState extends Equatable {
     this.currentAnswer = '',
     this.currentTry = 1,
     this.submissionStatus = SubmissionStatus.unknown,
-    this.gameStatus = GameStatus.playing,
+    this.gameStatus = GameStatus.started,
   });
 
   final String wordToGuess;
@@ -53,4 +53,4 @@ enum SubmissionStatus {
   valid,
   unknown
 }
-enum GameStatus { playing, finishedFail, finishedWon }
+enum GameStatus { started, playing, finishedFail, finishedWon }
