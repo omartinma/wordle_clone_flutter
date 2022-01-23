@@ -1,6 +1,10 @@
 name: WordsRepository
 
-on: pull_request
+on:
+  pull_request:
+    paths:
+      - "packages/words_repository/**"
+      - ".github/workflows/words_repository.yaml"
 
 jobs:
   build:
