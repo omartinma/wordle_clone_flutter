@@ -15,7 +15,7 @@ import 'package:words_repository/words_repository.dart';
 
 class MockWordsRepository extends Mock implements WordsRepository {
   @override
-  String getNextWord() => '';
+  String getNextWord() => 'random';
 }
 
 extension PumpApp on WidgetTester {

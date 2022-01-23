@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
-class WordleAnswer {
+class WordleAnswer extends Equatable {
   const WordleAnswer({
     required this.word,
     required this.results,
@@ -22,6 +23,9 @@ class WordleAnswer {
       results: results ?? this.results,
     );
   }
+
+  @override
+  List<Object?> get props => [word, results];
 }
 
 enum GuessResult {
