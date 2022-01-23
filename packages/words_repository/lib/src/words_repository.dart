@@ -1,7 +1,7 @@
 import 'dart:math';
 
 /// {@template words_repository}
-/// A Very Good Project created by Very Good CLI.
+/// Repository to work with words.
 /// {@endtemplate}
 class WordsRepository {
   /// {@macro words_repository}
