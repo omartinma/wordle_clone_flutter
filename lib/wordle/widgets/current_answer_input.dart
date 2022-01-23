@@ -52,6 +52,7 @@ class _CurrentAnswerInputState extends State<CurrentAnswerInput> {
           selector: (state) => state.gameStatus,
           builder: (context, gameStatus) {
             return TextField(
+              key: const Key('currentAnswerInput_textField'),
               autofocus: true,
               enabled: gameStatus == GameStatus.playing ||
                   gameStatus == GameStatus.started,

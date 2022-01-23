@@ -9,9 +9,6 @@ import 'package:wordle/wordle/wordle.dart';
 
 import '../../helpers/pump_app.dart';
 
-class MockWordleBloc extends MockBloc<WordleEvent, WordleState>
-    implements WordleBloc {}
-
 void main() {
   group('WordleView', () {
     late WordleBloc wordleBloc;
