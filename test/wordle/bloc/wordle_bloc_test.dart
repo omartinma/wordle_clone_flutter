@@ -11,6 +11,11 @@ import '../../helpers/helpers.dart';
 void main() {
   group('WordleBloc', () {
     late WordsRepository wordsRepository;
+    final dummyAnswer = WordleAnswer(
+      word: '',
+      results: List.filled(maxWordLength, GuessResult.unknown),
+    );
+    final initialAnswers = [for (var i = 0; i < maxTries; i++) dummyAnswer];
 
     setUp(() {
       wordsRepository = MockWordsRepository();
@@ -30,13 +35,7 @@ void main() {
         expect: () => <WordleState>[
           WordleState(
             wordToGuess: 'random',
-            answers: [
-              for (var i = 0; i < maxTries; i++)
-                WordleAnswer(
-                  word: '',
-                  results: List.filled(maxWordLength, GuessResult.unknown),
-                )
-            ],
+            answers: initialAnswers,
           ),
         ],
       );
@@ -54,13 +53,7 @@ void main() {
           ),
           WordleState(
             wordToGuess: 'random',
-            answers: [
-              for (var i = 0; i < maxTries; i++)
-                WordleAnswer(
-                  word: '',
-                  results: List.filled(maxWordLength, GuessResult.unknown),
-                )
-            ],
+            answers: initialAnswers,
           ),
         ],
       );
@@ -129,6 +122,136 @@ void main() {
             submissionStatus: SubmissionStatus.valid,
           ),
           WordleState(currentAnswer: validWord)
+        ],
+      );
+    });
+
+    group('WordleValidAnswerSubmitted', () {
+      blocTest<WordleBloc, WordleState>(
+        'emits GuessResult.correct, GuessResult.correctButWrongOrder, '
+        'GuessResult.wrong',
+        build: () => WordleBloc(wordsRepository),
+        seed: () => WordleState(
+          wordToGuess: 'abcde',
+          currentAnswer: 'acxxx',
+          answers: initialAnswers,
+        ),
+        act: (bloc) => bloc.add(WordleValidAnswerSubmitted()),
+        expect: () => <WordleState>[
+          WordleState(
+            wordToGuess: 'abcde',
+            currentTry: 2,
+            answers: [
+              WordleAnswer(
+                word: 'acxxx',
+                results: const [
+                  GuessResult.correct,
+                  GuessResult.correctButWrongOrder,
+                  GuessResult.wrong,
+                  GuessResult.wrong,
+                  GuessResult.wrong,
+                ],
+              ),
+              for (var i = 0; i < maxTries - 1; i++) dummyAnswer,
+            ],
+          )
+        ],
+      );
+
+      blocTest<WordleBloc, WordleState>(
+        'emits finishedWon',
+        build: () => WordleBloc(wordsRepository),
+        seed: () => WordleState(
+          wordToGuess: 'abcde',
+          currentAnswer: 'abcde',
+          answers: initialAnswers,
+        ),
+        act: (bloc) => bloc.add(WordleValidAnswerSubmitted()),
+        expect: () => <WordleState>[
+          WordleState(
+            wordToGuess: 'abcde',
+            currentTry: 2,
+            answers: [
+              WordleAnswer(
+                word: 'abcde',
+                results: const [
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                ],
+              ),
+              for (var i = 0; i < maxTries - 1; i++) dummyAnswer,
+            ],
+          ),
+          WordleState(
+            wordToGuess: 'abcde',
+            currentTry: 2,
+            gameStatus: GameStatus.finishedWon,
+            answers: [
+              WordleAnswer(
+                word: 'abcde',
+                results: const [
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                ],
+              ),
+              for (var i = 0; i < maxTries - 1; i++) dummyAnswer,
+            ],
+          ),
+        ],
+      );
+
+      blocTest<WordleBloc, WordleState>(
+        'emits finishedFail if tries exceeded',
+        build: () => WordleBloc(wordsRepository),
+        seed: () => WordleState(
+          wordToGuess: 'abcde',
+          currentAnswer: 'abcdx',
+          answers: initialAnswers,
+          currentTry: 6,
+        ),
+        act: (bloc) => bloc.add(WordleValidAnswerSubmitted()),
+        expect: () => <WordleState>[
+          WordleState(
+            wordToGuess: 'abcde',
+            currentTry: 7,
+            answers: [
+              for (var i = 0; i < maxTries - 1; i++) dummyAnswer,
+              WordleAnswer(
+                word: 'abcdx',
+                results: const [
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.wrong,
+                ],
+              ),
+            ],
+          ),
+          WordleState(
+            wordToGuess: 'abcde',
+            currentTry: 7,
+            gameStatus: GameStatus.finishedFail,
+            answers: [
+              for (var i = 0; i < maxTries - 1; i++) dummyAnswer,
+              WordleAnswer(
+                word: 'abcdx',
+                results: const [
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.correct,
+                  GuessResult.wrong,
+                ],
+              ),
+            ],
+          ),
         ],
       );
     });

@@ -91,7 +91,6 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     Emitter<WordleState> emit,
   ) {
     final currentAnswer = state.currentAnswer;
-
     final guessResults = <GuessResult>[];
     for (var i = 0; i < currentAnswer.length; i++) {
       final letterAnswer = currentAnswer[i];
