@@ -14,25 +14,23 @@ class WordleView extends StatelessWidget {
         if (state.gameStatus == GameStatus.finishedFail) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
+              key: const Key('wordleView_failedGame_snackBar'),
               content: Text('You failed! The answer was: ${state.wordToGuess}'),
             ),
           );
         } else if (state.gameStatus == GameStatus.finishedWon) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('You WON!')),
+            const SnackBar(
+              key: Key('wordleView_wonGame_snackBar'),
+              content: Text('You WON!'),
+            ),
           );
         }
       },
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Wordle'),
-          actions: [
-            IconButton(
-              onPressed: () =>
-                  context.read<WordleBloc>().add(const WordleGameStarted()),
-              icon: const Icon(Icons.refresh),
-            )
-          ],
+          actions: const [RefreshButton()],
         ),
         body: Column(
           children: const [
@@ -46,13 +44,16 @@ class WordleView extends StatelessWidget {
   }
 }
 
-class NextWord extends StatelessWidget {
-  const NextWord({Key? key}) : super(key: key);
+@visibleForTesting
+class RefreshButton extends StatelessWidget {
+  const RefreshButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final word =
-        context.select((WordleBloc element) => element.state.wordToGuess);
-    return Text(word);
+    return IconButton(
+      onPressed: () =>
+          context.read<WordleBloc>().add(const WordleGameStarted()),
+      icon: const Icon(Icons.refresh),
+    );
   }
 }

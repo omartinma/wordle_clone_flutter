@@ -9,8 +9,6 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:wordle/app/app.dart';
 import 'package:wordle/wordle/wordle.dart';
 import 'package:words_repository/words_repository.dart';
 import '../../helpers/helpers.dart';

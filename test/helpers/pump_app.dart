@@ -30,7 +30,8 @@ extension PumpApp on WidgetTester {
         home: MultiRepositoryProvider(
           providers: [
             RepositoryProvider.value(
-                value: wordsRepository ?? MockWordsRepository())
+              value: wordsRepository ?? MockWordsRepository(),
+            )
           ],
           child: widget,
         ),
