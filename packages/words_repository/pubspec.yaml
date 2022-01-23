@@ -1,0 +1,14 @@
+name: words_repository
+description: A Very Good Project created by Very Good CLI.
+version: 1.0.0+1
+publish_to: none
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+
+dependencies:
+  english_words: ^4.0.0
+
+dev_dependencies:
+  test: ^1.19.2
+  very_good_analysis: ^2.4.0
