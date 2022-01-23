@@ -5,8 +5,8 @@ abstract class WordleEvent extends Equatable {
   const WordleEvent();
 }
 
-class WordleFetchRequested extends WordleEvent {
-  const WordleFetchRequested();
+class WordleGameStarted extends WordleEvent {
+  const WordleGameStarted();
 
   @override
   List<Object> get props => [];
@@ -23,6 +23,13 @@ class WordleCurrentAnswerUpdated extends WordleEvent {
 
 class WordleAnswerSubmitted extends WordleEvent {
   const WordleAnswerSubmitted();
+
+  @override
+  List<Object> get props => [];
+}
+
+class WordleValidAnswerSubmitted extends WordleEvent {
+  const WordleValidAnswerSubmitted();
 
   @override
   List<Object> get props => [];

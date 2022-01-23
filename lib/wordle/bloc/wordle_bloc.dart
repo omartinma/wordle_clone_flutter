@@ -9,17 +9,21 @@ import 'package:words_repository/words_repository.dart';
 part 'wordle_event.dart';
 part 'wordle_state.dart';
 
+const maxTries = 6;
+const maxWordLength = 5;
+
 class WordleBloc extends Bloc<WordleEvent, WordleState> {
   WordleBloc(this._wordsRepository) : super(const WordleState()) {
-    on<WordleFetchRequested>(_fetchRequested);
+    on<WordleGameStarted>(_gameStarted);
     on<WordleCurrentAnswerUpdated>(_currentAnswerUpdated);
     on<WordleAnswerSubmitted>(_answerSubmitted);
+    on<WordleValidAnswerSubmitted>(_validAnswerSubmitted);
   }
 
   final WordsRepository _wordsRepository;
 
-  FutureOr<void> _fetchRequested(
-    WordleFetchRequested event,
+  FutureOr<void> _gameStarted(
+    WordleGameStarted event,
     Emitter<WordleState> emit,
   ) {
     final word = _wordsRepository.getNextWord();
@@ -27,8 +31,11 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
       WordleState(
         wordToGuess: word,
         answers: [
-          for (var i = 0; i < 6; i++)
-            WordleAnswer(word: '', results: List.filled(5, GuessResult.unknown))
+          for (var i = 0; i < maxTries; i++)
+            WordleAnswer(
+              word: '',
+              results: List.filled(maxWordLength, GuessResult.unknown),
+            )
         ],
       ),
     );
@@ -46,6 +53,36 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     Emitter<WordleState> emit,
   ) {
     final currentAnswer = state.currentAnswer;
+    if (currentAnswer.length < maxWordLength) {
+      emit(
+        state.copyWith(
+          submissionStatus: SubmissionStatus.notEnoughCharacters,
+        ),
+      );
+    } else if (!_wordsRepository.wordExists(currentAnswer)) {
+      emit(
+        state.copyWith(
+          submissionStatus: SubmissionStatus.wordNotInDictionary,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          submissionStatus: SubmissionStatus.valid,
+        ),
+      );
+    }
+
+    // Clean to avoid duplicates
+    emit(state.copyWith(submissionStatus: SubmissionStatus.unknown));
+  }
+
+  FutureOr<void> _validAnswerSubmitted(
+    WordleValidAnswerSubmitted event,
+    Emitter<WordleState> emit,
+  ) {
+    final currentAnswer = state.currentAnswer;
+
     final guessResults = <GuessResult>[];
     for (var i = 0; i < currentAnswer.length; i++) {
       final letterAnswer = currentAnswer[i];
@@ -65,7 +102,7 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
     );
 
     final newAnswers = List<WordleAnswer>.from(state.answers);
-    newAnswers[state.currentTry] = wordleAnswer;
+    newAnswers[state.currentTry - 1] = wordleAnswer;
 
     emit(
       state.copyWith(
@@ -74,5 +111,12 @@ class WordleBloc extends Bloc<WordleEvent, WordleState> {
         currentTry: state.currentTry + 1,
       ),
     );
+
+    // Check game status based on current answer
+    if (wordleAnswer.isCorrect) {
+      emit(state.copyWith(gameStatus: GameStatus.finishedWon));
+    } else if (state.currentTry > maxTries) {
+      emit(state.copyWith(gameStatus: GameStatus.finishedFail));
+    }
   }
 }

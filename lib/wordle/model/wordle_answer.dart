@@ -9,6 +9,10 @@ class WordleAnswer {
   final String word;
   final List<GuessResult> results;
 
+  bool get isCorrect {
+    return results.every((element) => element == GuessResult.correct);
+  }
+
   WordleAnswer copyWith({
     String? word,
     List<GuessResult>? results,
@@ -31,7 +35,7 @@ extension GuessResultExtension on GuessResult {
   Color color() {
     switch (this) {
       case GuessResult.wrong:
-        return Colors.red;
+        return Colors.transparent;
       case GuessResult.correct:
         return Colors.green;
       case GuessResult.correctButWrongOrder:

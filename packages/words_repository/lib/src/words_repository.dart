@@ -23,4 +23,9 @@ class WordsRepository {
     }
     return nextWord;
   }
+
+  /// Return whether a word exists or not
+  bool wordExists(String word) {
+    return all.contains(word);
+  }
 }

@@ -10,7 +10,7 @@ class AnswersView extends StatelessWidget {
     final answers =
         context.select((WordleBloc element) => element.state.answers);
     return ListView.builder(
-      itemCount: 6,
+      itemCount: maxTries,
       itemBuilder: (context, index) => AnswerTile(wordleAnswer: answers[index]),
     );
   }

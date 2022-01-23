@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wordle/wordle/wordle.dart';
 
@@ -20,17 +21,50 @@ class _CurrentAnswerInputState extends State<CurrentAnswerInput> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: TextField(
-        onChanged: (value) {
-          context.read<WordleBloc>().add(WordleCurrentAnswerUpdated(value));
-        },
-        onEditingComplete: () {
-          context.read<WordleBloc>().add(const WordleAnswerSubmitted());
+    return BlocListener<WordleBloc, WordleState>(
+      listenWhen: (previous, current) =>
+          previous.submissionStatus != current.submissionStatus,
+      listener: (context, state) {
+        if (state.submissionStatus == SubmissionStatus.valid) {
           textEditingController.clear();
-        },
-        controller: textEditingController,
+          context.read<WordleBloc>().add(const WordleValidAnswerSubmitted());
+        } else if (state.submissionStatus ==
+            SubmissionStatus.notEnoughCharacters) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Not enough characers')),
+          );
+        } else if (state.submissionStatus ==
+            SubmissionStatus.wordNotInDictionary) {
+          ScaffoldMessenger.of(context).clearSnackBars();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Word not in dictionary')),
+          );
+        }
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 30),
+        child: BlocSelector<WordleBloc, WordleState, GameStatus>(
+          selector: (state) => state.gameStatus,
+          builder: (context, gameStatus) {
+            return TextField(
+              autofocus: true,
+              enabled: gameStatus == GameStatus.playing,
+              inputFormatters: [
+                LengthLimitingTextInputFormatter(maxWordLength),
+              ],
+              onChanged: (value) {
+                context
+                    .read<WordleBloc>()
+                    .add(WordleCurrentAnswerUpdated(value));
+              },
+              onEditingComplete: () {
+                context.read<WordleBloc>().add(const WordleAnswerSubmitted());
+              },
+              controller: textEditingController,
+            );
+          },
+        ),
       ),
     );
   }

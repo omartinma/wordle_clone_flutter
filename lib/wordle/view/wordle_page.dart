@@ -10,7 +10,7 @@ class WordlePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => WordleBloc(context.read<WordsRepository>())
-        ..add(const WordleFetchRequested()),
+        ..add(const WordleGameStarted()),
       child: const WordleView(),
     );
   }

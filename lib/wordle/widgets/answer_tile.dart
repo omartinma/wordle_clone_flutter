@@ -39,7 +39,12 @@ class LetterAnswer extends StatelessWidget {
       decoration:
           BoxDecoration(color: guessResult.color(), border: Border.all()),
       margin: const EdgeInsets.all(3),
-      child: Center(child: Text(letter)),
+      child: Center(
+        child: Text(
+          letter,
+          style: const TextStyle(fontSize: 20),
+        ),
+      ),
     );
   }
 }
